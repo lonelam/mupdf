@@ -13,6 +13,10 @@
 #define PATH_MAX 4096
 #endif
 
+#ifndef MIN
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
+#endif
+
 #ifndef MAX
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #endif
@@ -1108,6 +1112,33 @@ static void pdfapp_search_in_direction(pdfapp_t *app, enum panning *panto, int d
 	winrepaint(app);
 }
 
+static void pdfapp_zoomselection(pdfapp_t *app)
+{
+	float newres;
+	int iw = fz_pixmap_width(app->ctx, app->image);
+	int ih = fz_pixmap_height(app->ctx, app->image);
+	int x = MAX(0, app->selr.x0);
+	int y = MAX(0, app->selr.y0);
+	int selw = MIN(app->selr.x1, iw) - x;
+	int selh = MIN(app->selr.y1, ih) - y;
+
+	if (selw > 0 && selh > 0)
+	{
+		newres = MIN(app->winw * app->resolution / selw, app->winh * app->resolution / selh);
+		if (newres > MAXRES)
+			newres = MAXRES;
+		if (newres != app->resolution)
+		{
+			app->panx = app->winw / 2 - (x + selw / 2) * newres / app->resolution;
+			app->pany = app->winh / 2 - (y + selh / 2) * newres / app->resolution;
+			app->resolution = newres;
+			pdfapp_showpage(app, 0, 1, 1, 0, 0);
+		}
+		app->selr.x0 = app->selr.x1 = 0;
+		app->selr.y0 = app->selr.y1 = 0;
+	}
+}
+
 void pdfapp_onresize(pdfapp_t *app, int w, int h)
 {
 	if (app->winw != w || app->winh != h)
@@ -1265,6 +1296,10 @@ void pdfapp_onkey(pdfapp_t *app, int c, int modifiers)
 		break;
 	case 'Z':
 		pdfapp_autozoom(app);
+		break;
+
+	case '*':
+		pdfapp_zoomselection(app);
 		break;
 
 	case 'L':
