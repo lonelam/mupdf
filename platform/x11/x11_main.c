@@ -496,15 +496,15 @@ static void winblitstatusbar(pdfapp_t *app)
 	{
 		char buf[sizeof(gapp.search) + 50];
 		sprintf(buf, "Search: %s", gapp.search);
-		XSetForeground(xdpy, xgc, WhitePixel(xdpy, xscr));
-		fillrect(0, 0, gapp.winw, 30);
-		windrawstring(&gapp, 10, 20, buf);
+		XSetForeground(xdpy, xgc, 0x303030);
+		fillrect(0, gapp.winh - 30, gapp.winw, 30);
+		windrawstringxor(&gapp, 10, gapp.winh - 10, buf);
 	}
 	else if (showingmessage)
 	{
-		XSetForeground(xdpy, xgc, WhitePixel(xdpy, xscr));
-		fillrect(0, 0, gapp.winw, 30);
-		windrawstring(&gapp, 10, 20, message);
+		XSetForeground(xdpy, xgc, 0x303030);
+		fillrect(0, gapp.winh - 30, gapp.winw, 30);
+		windrawstringxor(&gapp, 10, gapp.winh - 10, message);
 	}
 	else if (showingpage)
 	{

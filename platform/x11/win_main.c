@@ -34,6 +34,7 @@ static HWND hwndview = NULL;
 static HDC hdc;
 static HBRUSH bgbrush;
 static HBRUSH shbrush;
+static HBRUSH spbrush;
 static BITMAPINFO *dibinf = NULL;
 static HCURSOR arrowcurs, handcurs, waitcurs, caretcurs;
 static LRESULT CALLBACK frameproc(HWND, UINT, WPARAM, LPARAM);
@@ -624,6 +625,7 @@ void winopen()
 	/* And a background color */
 	bgbrush = CreateSolidBrush(RGB(0x70,0x70,0x70));
 	shbrush = CreateSolidBrush(RGB(0x40,0x40,0x40));
+	spbrush = CreateSolidBrush(RGB(0x30,0x30,0x30));
 
 	/* Init DIB info for buffer */
 	dibinf = malloc(sizeof(BITMAPINFO) + 12);
@@ -728,14 +730,22 @@ void windrawrect(pdfapp_t *app, int x0, int y0, int x1, int y1)
 	r.top = y0;
 	r.right = x1;
 	r.bottom = y1;
-	FillRect(hdc, &r, (HBRUSH)GetStockObject(WHITE_BRUSH));
+	FillRect(hdc, &r, spbrush);
 }
 
 void windrawstring(pdfapp_t *app, int x, int y, char *s)
 {
+	COLORREF bg, fg;
+
 	HFONT font = (HFONT)GetStockObject(ANSI_FIXED_FONT);
 	SelectObject(hdc, font);
+	bg = SetBkColor(hdc, 0x303030);
+	fg = SetTextColor(hdc, 0xD0D0D0);
 	TextOutA(hdc, x, y - 12, s, (int)strlen(s));
+	if (bg != CLR_INVALID)
+	  SetBkColor(hdc, bg);
+	if (fg != CLR_INVALID)
+	  SetBkColor(hdc, fg);
 }
 
 void winblitsearch()
@@ -744,8 +754,8 @@ void winblitsearch()
 	{
 		char buf[sizeof(gapp.search) + 50];
 		sprintf(buf, "Search: %s", gapp.search);
-		windrawrect(&gapp, 0, 0, gapp.winw, 30);
-		windrawstring(&gapp, 10, 20, buf);
+		windrawrect(&gapp, 0, gapp.winh - 30, gapp.winw, gapp.winh);
+		windrawstring(&gapp, 10, gapp.winh - 10, buf);
 	}
 }
 
