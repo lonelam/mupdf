@@ -96,7 +96,7 @@ char *pdfapp_usage(pdfapp_t *app)
 		"Z\t\t-- zoom to fit page\n"
 		"[\t\t-- decrease font size (EPUB only)\n"
 		"]\t\t-- increase font size (EPUB only)\n"
-		"w\t\t-- shrinkwrap\n"
+		"w\t\t-- toggle shrinkwrap\n"
 		"f\t\t-- fullscreen\n"
 		"r\t\t-- reload file\n"
 		". pgdn right spc\t-- next page\n"
@@ -455,7 +455,6 @@ void pdfapp_open_progressive(pdfapp_t *app, char *filename, int reload, int bps)
 
 	if (!reload)
 	{
-		app->shrinkwrap = 1;
 		app->rotate = 0;
 		app->panx = 0;
 		app->pany = 0;
@@ -985,7 +984,7 @@ static void pdfapp_showpage(pdfapp_t *app, int loadpage, int drawpage, int repai
 			/* there is no image to blit, but there might be an error message */
 			winresize(app, app->layout_w, app->layout_h);
 		}
-		else if (app->shrinkwrap)
+		else if (app->shrinkwrap || app->winw == 0 || app->winh == 0)
 		{
 			int w = fz_pixmap_width(app->ctx, app->image);
 			int h = fz_pixmap_height(app->ctx, app->image);
@@ -1353,9 +1352,11 @@ void pdfapp_onkey(pdfapp_t *app, int c, int modifiers)
 			winfullscreen(app, 0);
 			app->fullscreen = 0;
 		}
-		app->shrinkwrap = 1;
-		app->panx = app->pany = 0;
-		pdfapp_showpage(app, 0, 0, 1, 0, 0);
+		if (app->shrinkwrap ^= 1)
+		{
+			app->panx = app->pany = 0;
+			pdfapp_showpage(app, 0, 0, 1, 0, 0);
+		}
 		break;
 
 	case 'h':
