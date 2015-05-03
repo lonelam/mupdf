@@ -1821,14 +1821,14 @@ void pdfapp_onmouse(pdfapp_t *app, int x, int y, int btn, int modifiers, int sta
 
 	if (state == 1 && !processed)
 	{
-		if (btn == 1 && !app->iscopying)
+		if (btn == 1 && !(modifiers & 1<<0) && !app->iscopying)
 		{
 			app->ispanning = 1;
 			app->selx = x;
 			app->sely = y;
 			app->beyondy = 0;
 		}
-		if (btn == 3 && !app->ispanning)
+		if ((btn == 3 || (btn == 1 && (modifiers & 1<<0))) && !app->ispanning)
 		{
 			app->iscopying = 1;
 			app->selx = x;
