@@ -24,7 +24,7 @@
 	url = git://git.ghostscript.com/thirdparty-zlib.git
 [submodule "thirdparty/curl"]
 	path = thirdparty/curl
-	url = git://git.ghostscript.com/thirdparty-curl.git
+	url = https://github.com/lonelam/mupdf-curl.git
 [submodule "thirdparty/freeglut"]
 	path = thirdparty/freeglut
 	url = git://git.ghostscript.com/thirdparty-freeglut.git
