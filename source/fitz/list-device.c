@@ -3,94 +3,13 @@
 #include <assert.h>
 #include <string.h>
 
-typedef struct fz_display_node_s fz_display_node;
-typedef struct fz_list_device_s fz_list_device;
 
-#define STACK_SIZE 96
 
-typedef enum fz_display_command_e
-{
-	FZ_CMD_FILL_PATH,
-	FZ_CMD_STROKE_PATH,
-	FZ_CMD_CLIP_PATH,
-	FZ_CMD_CLIP_STROKE_PATH,
-	FZ_CMD_FILL_TEXT,
-	FZ_CMD_STROKE_TEXT,
-	FZ_CMD_CLIP_TEXT,
-	FZ_CMD_CLIP_STROKE_TEXT,
-	FZ_CMD_IGNORE_TEXT,
-	FZ_CMD_FILL_SHADE,
-	FZ_CMD_FILL_IMAGE,
-	FZ_CMD_FILL_IMAGE_MASK,
-	FZ_CMD_CLIP_IMAGE_MASK,
-	FZ_CMD_POP_CLIP,
-	FZ_CMD_BEGIN_MASK,
-	FZ_CMD_END_MASK,
-	FZ_CMD_BEGIN_GROUP,
-	FZ_CMD_END_GROUP,
-	FZ_CMD_BEGIN_TILE,
-	FZ_CMD_END_TILE,
-	FZ_CMD_RENDER_FLAGS,
-	FZ_CMD_DEFAULT_COLORSPACES,
-	FZ_CMD_BEGIN_LAYER,
-	FZ_CMD_END_LAYER
-} fz_display_command;
 
-/* The display list is a list of nodes.
- * Each node is a structure consisting of a bitfield (that packs into a
- * 32 bit word).
- * The different fields in the bitfield identify what information is
- * present in the node.
- *
- *	cmd:	What type of node this is.
- *
- *	size:	The number of sizeof(fz_display_node) bytes that this node's
- *		data occupies. (i.e. &node[node->size] = the next node in the
- *		chain; 0 for end of list).
- *
- *	rect:	0 for unchanged, 1 for present.
- *
- *	path:	0 for unchanged, 1 for present.
- *
- *	cs:	0 for unchanged
- *		1 for devicegray (color defaults to 0)
- *		2 for devicegray (color defaults to 1)
- *		3 for devicergb (color defaults to 0,0,0)
- *		4 for devicergb (color defaults to 1,1,1)
- *		5 for devicecmyk (color defaults to 0,0,0,0)
- *		6 for devicecmyk (color defaults to 0,0,0,1)
- *		7 for present (color defaults to 0)
- *
- *	color:	0 for unchanged color, 1 for present.
- *
- *	alpha:	0 for unchanged, 1 for solid, 2 for transparent, 3
- *		for alpha value present.
- *
- *	ctm:	0 for unchanged,
- *		1 for change ad
- *		2 for change bc
- *		4 for change ef.
- *
- *	stroke:	0 for unchanged, 1 for present.
- *
- *	flags:	Flags (node specific meanings)
- *
- * Nodes are packed in the order:
- * header, rect, colorspace, color, alpha, ctm, stroke_state, path, private data.
- */
-struct fz_display_node_s
-{
-	unsigned int cmd    : 5;
-	unsigned int size   : 9;
-	unsigned int rect   : 1;
-	unsigned int path   : 1;
-	unsigned int cs     : 3;
-	unsigned int color  : 1;
-	unsigned int alpha  : 2;
-	unsigned int ctm    : 3;
-	unsigned int stroke : 1;
-	unsigned int flags  : 6;
-};
+
+
+
+
 
 enum {
 	CS_UNCHANGED = 0,
@@ -115,37 +34,6 @@ enum {
 	MAX_NODE_SIZE = (1<<9)-sizeof(fz_display_node)
 };
 
-struct fz_display_list_s
-{
-	fz_storable storable;
-	fz_display_node *list;
-	fz_rect mediabox;
-	int max;
-	int len;
-};
-
-struct fz_list_device_s
-{
-	fz_device super;
-
-	fz_display_list *list;
-
-	fz_path *path;
-	float alpha;
-	fz_matrix ctm;
-	fz_stroke_state *stroke;
-	fz_colorspace *colorspace;
-	fz_color_params *color_params;
-	float color[FZ_MAX_COLORS];
-	fz_rect rect;
-
-	int top;
-	struct {
-		fz_rect *update;
-		fz_rect rect;
-	} stack[STACK_SIZE];
-	int tiled;
-};
 
 enum { ISOLATED = 1, KNOCKOUT = 2 };
 enum { OPM = 1, OP = 2, BP = 3, RI = 4};
@@ -196,7 +84,7 @@ fz_append_display_node(
 	case FZ_CMD_CLIP_TEXT:
 	case FZ_CMD_CLIP_STROKE_TEXT:
 	case FZ_CMD_CLIP_IMAGE_MASK:
-		if (writer->top < STACK_SIZE)
+		if (writer->top < LIST_STACK_SIZE)
 		{
 			rect_for_updates = 1;
 			writer->stack[writer->top].rect = fz_empty_rect;
@@ -204,7 +92,7 @@ fz_append_display_node(
 		writer->top++;
 		break;
 	case FZ_CMD_END_MASK:
-		if (writer->top < STACK_SIZE)
+		if (writer->top < LIST_STACK_SIZE)
 		{
 			writer->stack[writer->top].update = NULL;
 			writer->stack[writer->top].rect = fz_empty_rect;
@@ -213,7 +101,7 @@ fz_append_display_node(
 		break;
 	case FZ_CMD_BEGIN_TILE:
 		writer->tiled++;
-		if (writer->top > 0 && writer->top <= STACK_SIZE)
+		if (writer->top > 0 && writer->top <= LIST_STACK_SIZE)
 		{
 			writer->stack[writer->top-1].rect = fz_infinite_rect;
 		}
@@ -224,7 +112,7 @@ fz_append_display_node(
 	case FZ_CMD_END_GROUP:
 		break;
 	case FZ_CMD_POP_CLIP:
-		if (writer->top > STACK_SIZE)
+		if (writer->top > LIST_STACK_SIZE)
 		{
 			writer->top--;
 			rect = &fz_infinite_rect;
@@ -250,7 +138,7 @@ fz_append_display_node(
 		}
 		/* fallthrough */
 	default:
-		if (writer->top > 0 && writer->tiled == 0 && writer->top <= STACK_SIZE && rect)
+		if (writer->top > 0 && writer->tiled == 0 && writer->top <= LIST_STACK_SIZE && rect)
 			writer->stack[writer->top-1].rect = fz_union_rect(writer->stack[writer->top-1].rect, *rect);
 		break;
 	}
@@ -466,7 +354,9 @@ fz_append_display_node(
 		private_off = size;
 		size += SIZE_IN_NODES(private_data_len);
 	}
-
+	/*
+	memory alloaction.
+	*/
 	if (list->len + size > list->max)
 	{
 		int newsize = list->max * 2;
@@ -479,7 +369,7 @@ fz_append_display_node(
 		list->list = fz_resize_array(ctx, list->list, newsize, sizeof(fz_display_node));
 		list->max = newsize;
 		diff = (char *)(list->list) - (char *)old;
-		n = (writer->top < STACK_SIZE ? writer->top : STACK_SIZE);
+		n = (writer->top < LIST_STACK_SIZE ? writer->top : LIST_STACK_SIZE);
 		for (i = 0; i < n; i++)
 		{
 			if (writer->stack[i].update != NULL)
@@ -1233,9 +1123,14 @@ fz_list_set_default_colorspaces(fz_context *ctx, fz_device *dev, fz_default_colo
 		sizeof(default_cs2)); /* private_data_len */
 }
 
+
+
 static void
 fz_list_begin_layer(fz_context *ctx, fz_device *dev, const char *layer_name)
 {
+	fz_list_device * list_dev = (fz_list_device *)dev;
+
+	list_dev->istack[list_dev->itop++] = 0;//zero is regarded as OC layer
 	fz_append_display_node(
 		ctx,
 		dev,
@@ -1253,8 +1148,71 @@ fz_list_begin_layer(fz_context *ctx, fz_device *dev, const char *layer_name)
 }
 
 static void
+fz_list_begin_mcitem(fz_context *ctx, fz_device *dev, const char * tag, pdf_obj * prop)
+{
+	fz_list_device * list_dev = (fz_list_device *)dev;
+
+	list_dev->istack[list_dev->itop++] = 1;//one is regarded as mcid beginning
+	fz_append_display_node(
+		ctx,
+		dev,
+		FZ_CMD_BEGIN_MCITEM,
+		0, /* flags */
+		NULL,
+		NULL, /* path */
+		NULL, /* color */
+		NULL, /* colorspace */
+		NULL, /* alpha */
+		NULL,
+		NULL, /* stroke */
+		tag, /* private_data */
+		1 + strlen(tag)); /* private_data_len */
+	
+	
+	int mcid = -1;
+	if (prop)
+	{
+		pdf_obj* tmp = pdf_dict_gets(ctx, prop, "MCID");
+		mcid = pdf_to_int(ctx, tmp);
+	}
+	//TODO: memory leak here
+	fz_list_item * tail = fz_new_list_item(ctx, list_dev->list->len, mcid);
+	if (list_dev->item_head == NULL)
+	{
+		list_dev->item_head = list_dev->item_tail = tail;
+	}
+	else
+	{
+		if (list_dev->item_tail->end == -1)
+		{
+			fz_warn(ctx, "[WARN]append item after an unfinished item.");
+		}
+		list_dev->item_tail->next = tail;
+		list_dev->item_tail = tail;
+	}
+	//int len = pdf_dict_len(ctx, cooked);
+	//for (i = 0; i < len; i++)
+	//{
+	//	strcpy(debug_buf + strlen(debug_buf), pdf_to_name(ctx, pdf_dict_get_key(ctx, cooked, i)));
+	//	strcpy(debug_buf + strlen(debug_buf), ",");
+	//	size_t sz;
+	//	strcpy(debug_buf + strlen(debug_buf), pdf_to_string(ctx, pdf_dict_get_val(ctx, cooked, i), &sz));
+	//	strcpy(debug_buf + strlen(debug_buf), ",");
+	//}
+	
+	
+	//fz_warn(ctx, "[DEBUG] BDC with %s tag, cooked mcid: %d.", tag, mcid);
+}
+
+static void
 fz_list_end_layer(fz_context *ctx, fz_device *dev)
 {
+	fz_list_device * list_dev = (fz_list_device *)dev;
+	if (list_dev->istack[--list_dev->itop])//see if it is an mcid endding.
+	{
+		list_dev->item_tail->end = list_dev->list->len;
+		//fz_warn(ctx, "[DEBUG] BDC [%d] end.", list_dev->item_tail->id);
+	}
 	fz_append_display_node(
 		ctx,
 		dev,
@@ -1269,6 +1227,7 @@ fz_list_end_layer(fz_context *ctx, fz_device *dev)
 		NULL, /* stroke */
 		NULL, /* private_data */
 		0); /* private_data_len */
+	
 }
 
 static void
@@ -1318,6 +1277,7 @@ fz_new_list_device(fz_context *ctx, fz_display_list *list)
 	dev->super.set_default_colorspaces = fz_list_set_default_colorspaces;
 
 	dev->super.begin_layer = fz_list_begin_layer;
+	dev->super.begin_mcitem = fz_list_begin_mcitem;
 	dev->super.end_layer = fz_list_end_layer;
 
 	dev->super.drop_device = fz_list_drop_device;
@@ -1330,6 +1290,9 @@ fz_new_list_device(fz_context *ctx, fz_display_list *list)
 	dev->colorspace = fz_keep_colorspace(ctx, fz_device_gray(ctx));
 	memset(dev->color, 0, sizeof(float)*FZ_MAX_COLORS);
 	dev->top = 0;
+	dev->item_head = dev->item_tail = NULL;;
+	dev->itop = 0;
+	
 	dev->tiled = 0;
 
 	return &dev->super;
@@ -1432,6 +1395,20 @@ fz_drop_display_list_imp(fz_context *ctx, fz_storable *list_)
 	fz_free(ctx, list->list);
 	fz_free(ctx, list);
 }
+
+//TODO: control its memory
+fz_list_item * 
+fz_new_list_item(fz_context * ctx, int start, int mcid)
+{
+	fz_list_item * item = fz_malloc_struct(ctx, fz_list_item);
+	item->start = start;
+	item->end = -1;
+	item->next = NULL;
+	item->id = mcid;
+	return item;
+}
+
+
 
 fz_display_list *
 fz_new_display_list(fz_context *ctx, fz_rect mediabox)
@@ -1655,7 +1632,7 @@ fz_run_display_list(fz_context *ctx, fz_display_list *list, fz_device *dev, fz_m
 		if (tiled ||
 			n.cmd == FZ_CMD_BEGIN_TILE || n.cmd == FZ_CMD_END_TILE ||
 			n.cmd == FZ_CMD_RENDER_FLAGS || n.cmd == FZ_CMD_DEFAULT_COLORSPACES ||
-			n.cmd == FZ_CMD_BEGIN_LAYER || n.cmd == FZ_CMD_END_LAYER)
+			n.cmd == FZ_CMD_BEGIN_LAYER || n.cmd == FZ_CMD_END_LAYER || n.cmd == FZ_CMD_BEGIN_MCITEM)
 		{
 			empty = 0;
 		}
@@ -1788,6 +1765,9 @@ visible:
 				break;
 			case FZ_CMD_BEGIN_LAYER:
 				fz_begin_layer(ctx, dev, (const char *)node);
+				break;
+			case FZ_CMD_BEGIN_MCITEM:
+				fz_begin_mcitem(ctx, dev, (const char *)node, NULL);
 				break;
 			case FZ_CMD_END_LAYER:
 				fz_end_layer(ctx, dev);

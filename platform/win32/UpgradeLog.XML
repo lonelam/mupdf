@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="mupdf">
+</Property><Property Name="Solution File" Value="D:\mupdf\platform\win32\mupdf.sln">
+</Property><Property Name="Date" Value="Monday, July 9, 2018">
+</Property><Property Name="Time" Value="17:26 PM">
+</Property></Properties><Event ErrorLevel="0" Project="" Source="mupdf.sln" Description="File successfully backed up as D:\mupdf\platform\win32\mupdf.sln.old">
+</Event><Event ErrorLevel="0" Project="mupdf" Source="mupdf.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="mupdf" Source="mupdf.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="libthirdparty" Source="libthirdparty.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="libthirdparty" Source="libthirdparty.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="libmupdf" Source="libmupdf.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="libmupdf" Source="libmupdf.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="mudraw" Source="mudraw.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="mudraw" Source="mudraw.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="mutool" Source="mutool.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="mutool" Source="mutool.vcproj" Description="Converted">
+</Event><Event ErrorLevel="2" Project="vc8libcurl" Source="..\..\thirdparty\curl\vs\vc8\lib\vc8libcurl.vcproj" Description="The following error has occurred during XML parsing:&#xA;&#xA;File: D:\mupdf\thirdparty\curl\vs\vc8\lib\vc8libcurl.vcproj&#xA;Line: 9&#xA;Column: 2&#xA;Error Message:&#xA;'9.00' violates enumeration constraint of '7.00 7,00 7.10 7,10 8.00 8,00'.&#xA;The attribute 'Version' with value '9.00' failed to parse.&#xA;&#xA;The file 'D:\mupdf\thirdparty\curl\vs\vc8\lib\vc8libcurl.vcproj' has failed to load.">
+</Event><Event ErrorLevel="2" Project="vc8libcurl" Source="..\..\thirdparty\curl\vs\vc8\lib\vc8libcurl.vcproj" Description="Project upgrade failed.">
+</Event><Event ErrorLevel="3" Project="vc8libcurl" Source="..\..\thirdparty\curl\vs\vc8\lib\vc8libcurl.vcproj" Description="Not Converted">
+</Event><Event ErrorLevel="0" Project="mupdf-curl" Source="mupdf-curl.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="mupdf-curl" Source="mupdf-curl.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="mujstest" Source="mujstest.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="mujstest" Source="mujstest.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="libfreeglut" Source="libfreeglut.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="libfreeglut" Source="libfreeglut.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="mupdf-gl" Source="mupdf-gl.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="mupdf-gl" Source="mupdf-gl.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="libresources" Source="libresources.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="libresources" Source="libresources.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="muraster" Source="muraster.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="muraster" Source="muraster.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="javaviewerlib" Source="javaviewerlib.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="javaviewerlib" Source="javaviewerlib.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="javaviewer" Source="javaviewer.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="javaviewer" Source="javaviewer.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="libluratech" Source="libluratech.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="libluratech" Source="libluratech.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="libmuthreads" Source="libmuthreads.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="libmuthreads" Source="libmuthreads.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="mu-office-lib" Source="mu-office-lib.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="mu-office-lib" Source="mu-office-lib.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="mu-office-test" Source="mu-office-test.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="mu-office-test" Source="mu-office-test.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="libmutool" Source="libmutool.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="libmutool" Source="libmutool.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="libpkcs7" Source="libpkcs7.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="libpkcs7" Source="libpkcs7.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="bin2coff" Source="bin2coff.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="bin2coff" Source="bin2coff.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="mupdf.sln" Description="The solution file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="" Source="mupdf.sln" Description="No Conversion Required">
+</Event></UpgradeLog>

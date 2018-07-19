@@ -485,6 +485,7 @@ resolve_properties(fz_context *ctx, pdf_csi *csi, pdf_obj *obj)
 static void
 pdf_process_BDC(fz_context *ctx, pdf_processor *proc, pdf_csi *csi)
 {
+	//BDC comes as either OC layer or Content sequence item beginning.
 	if (proc->op_BDC)
 		proc->op_BDC(ctx, proc, csi->name, csi->obj, resolve_properties(ctx, csi, csi->obj));
 

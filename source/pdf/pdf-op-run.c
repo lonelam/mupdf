@@ -2019,16 +2019,28 @@ static void pdf_run_BMC(fz_context *ctx, pdf_processor *proc, const char *tag)
 static void pdf_run_BDC(fz_context *ctx, pdf_processor *proc, const char *tag, pdf_obj *raw, pdf_obj *cooked)
 {
 	pdf_run_processor *pr = (pdf_run_processor *)proc;
+	pdf_obj *tmp;
 	const char *str;
+	int mcid;
+	int i;
 
-	if (!tag || strcmp(tag, "OC"))
+
+	if (!tag)
 		return;
-
-	str = pdf_dict_get_string(ctx, cooked, PDF_NAME(Name), NULL);
-	if (strlen(str) == 0)
-		str = "UnnamedLayer";
-
-	fz_begin_layer(ctx, pr->dev, str);
+	if (strcmp(tag, "OC") == 0)
+	{
+		str = pdf_dict_get_string(ctx, cooked, PDF_NAME(Name), NULL);
+		if (strlen(str) == 0)
+			str = "UnnamedLayer";
+		fz_begin_layer(ctx, pr->dev, str);
+	}
+	else
+	{
+		tmp = pdf_dict_gets(ctx, cooked, "MCID");
+		if (!tmp)
+			return;
+		fz_begin_mcitem(ctx, pr->dev, tag, cooked);
+	}
 }
 
 static void pdf_run_EMC(fz_context *ctx, pdf_processor *proc)

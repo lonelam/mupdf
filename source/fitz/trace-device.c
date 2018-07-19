@@ -355,6 +355,13 @@ fz_trace_begin_layer(fz_context *ctx, fz_device *dev, const char *name)
 }
 
 static void
+fz_trace_begin_mcitem(fz_context *ctx, fz_device *dev, const char * tag, pdf_obj * prop)
+{
+	fz_output * out = ((fz_trace_device *)dev)->out;
+	fz_write_printf(ctx, out, "<layer name=\"%s\">\n", tag);
+}
+
+static void
 fz_trace_end_layer(fz_context *ctx, fz_device *dev)
 {
 	fz_output *out = ((fz_trace_device*)dev)->out;
@@ -392,6 +399,7 @@ fz_device *fz_new_trace_device(fz_context *ctx, fz_output *out)
 	dev->super.end_tile = fz_trace_end_tile;
 
 	dev->super.begin_layer = fz_trace_begin_layer;
+	dev->super.begin_mcitem = fz_trace_begin_mcitem;
 	dev->super.end_layer = fz_trace_end_layer;
 
 	dev->out = out;

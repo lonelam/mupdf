@@ -9,7 +9,7 @@
 #include "mupdf/fitz/shade.h"
 #include "mupdf/fitz/path.h"
 #include "mupdf/fitz/text.h"
-
+#include "mupdf/pdf/object.h"
 /*
 	The different format handlers (pdf, xps etc) interpret pages to a
 	device. These devices can then process the stream of calls they
@@ -118,6 +118,8 @@ struct fz_device_s
 	void (*begin_layer)(fz_context *, fz_device *, const char *layer_name);
 	void (*end_layer)(fz_context *, fz_device *);
 
+	void(*begin_mcitem)(fz_context *ctx, fz_device *dev, const char * tag, pdf_obj * prop);
+
 	fz_rect d1_rect;
 
 	int error_depth;
@@ -153,6 +155,7 @@ void fz_render_flags(fz_context *ctx, fz_device *dev, int set, int clear);
 void fz_set_default_colorspaces(fz_context *ctx, fz_device *dev, fz_default_colorspaces *default_cs);
 void fz_begin_layer(fz_context *ctx, fz_device *dev, const char *layer_name);
 void fz_end_layer(fz_context *ctx, fz_device *dev);
+void fz_begin_mcitem(fz_context *ctx, fz_device *dev, const char * tag, pdf_obj * prop);
 fz_device *fz_new_device_of_size(fz_context *ctx, int size);
 
 #define fz_new_derived_device(CTX, TYPE) \

@@ -514,6 +514,12 @@ void fz_end_layer(fz_context *ctx, fz_device *dev)
 		dev->end_layer(ctx, dev);
 }
 
+void fz_begin_mcitem(fz_context *ctx, fz_device *dev, const char * tag, pdf_obj * prop)
+{
+	if (dev->begin_mcitem)
+		dev->begin_mcitem(ctx, dev, tag, prop);
+}
+
 fz_rect
 fz_device_current_scissor(fz_context *ctx, fz_device *dev)
 {
