@@ -1,4 +1,10 @@
-I'm modifying mupdf library to make it compatible with my application which is using PDF's marked content structure feature to extract data from document.
+I'm modifying mupdf library to make it compatible with my application which
+is using PDF's marked content structure feature to extract data from document.
+
+- compilation
+
+1, git clone --recursive https://github.com/lonelam/mupdf
+2, open platform/win32/mupdf.sln
 
 
 
