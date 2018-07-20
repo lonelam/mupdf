@@ -54,6 +54,9 @@ platform/java/local.properties
 platform/win32/*.user
 platform/win32/*.ncb
 platform/win32/*.suo
+platform/win32/*.db
+platform/win32/*.opendb
+platform/win32/Win32
 platform/win32/Debug
 platform/win32/DebugOpenssl
 platform/win32/Profile
